@@ -4,9 +4,9 @@ var bycrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
 const AdminSchema = new mongoose.Schema({
-    username: {type: String, unique: true},
-    password: {type: String},
-    regno: {type: Number, require: true},
+    username: {type: String, unique: true,require: true},
+    password: {type: String ,require: true},
+    regno: {type: Number,unique: true, require: true},
     email: {type: String, require:true},
     tokens: [{
         token :{

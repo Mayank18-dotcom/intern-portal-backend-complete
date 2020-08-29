@@ -46,7 +46,7 @@ app.post("/user/signup",cors(), async(req, res) => {
     const token = await user.generateauthtoken()
     res.status(201).json({user, token})
   } catch(e){
-    res.status(400).send("Username Already exists");
+    res.status(400).send("Username / RegNo. already exists");
   }
 });
 
@@ -165,7 +165,7 @@ app.post("/admin/signup",cors(), async(req, res) => {
     const token = await admin.generateauthtoken()
     res.status(201).json({admin, token})
   } catch(e){
-    res.status(400).send("Username Already exists");
+    res.status(400).send("Username / RegNo. already exists");
   }
 });
 
@@ -225,6 +225,18 @@ app.post('/admin/addtask', admauth,(req,res)=>{
   })
 })
 
+
+app.get('/alladmins',(req,res)=>{
+  Admin.find({},(err,result)=>{
+    if(err){
+      res.send(err)
+    }
+    else{
+      res.json(result);
+      console.log(result);
+    }
+  })
+})
 // Dashboard for the admin
 app.get("/admin/dashboard/:options", admauth, (req, res) => {
   User.find({"options":req.params.options}, (err, result) => {

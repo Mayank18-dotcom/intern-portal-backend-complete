@@ -3,13 +3,11 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var bycrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
-
 const UserSchema = new mongoose.Schema({
-    username: {type: String, unique: true},
-    password: {type: String},
-    regno: {type: Number, require: true},
-	options: {
-		type: Number, possibleValues: ['100503','100507','100511','100959','101296']},
+    username: {type: String, unique: true,require:true},
+    password: {type: String, require: true},
+    regno: {type: Number, require: true,unique: true},
+	options: {type: Number,require: true},
     email: {type: String, require:true},
     tokens: [{
         token :{
