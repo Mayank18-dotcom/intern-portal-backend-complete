@@ -286,6 +286,23 @@ app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
   })
 })
 
+//delete taskone
+/*app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
+    Task.deleteOne({"_id":req.params.id},(err, result) => {
+    if (err) {
+      res.json({
+        status:400,
+        success:false,
+        message:err
+      })
+    }
+    else{
+		console.log(result);
+    res.json(result);
+    }
+  })
+})*/
+
 
 // Incomplete to complete
 app.post('/admin/dashboard/taskone/complete', admauth, (req, res) => {
