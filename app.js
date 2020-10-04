@@ -287,7 +287,7 @@ app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
 })
 
 //delete taskone
-/*app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
+app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
     Task.deleteOne({"_id":req.params.id},(err, result) => {
     if (err) {
       res.json({
@@ -301,7 +301,7 @@ app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
     res.json(result);
     }
   })
-})*/
+})
 
 
 // Incomplete to complete
