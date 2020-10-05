@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(cors());
 
-
+mongoose.set('useFindAndModify', false);
 /*********************************************************************************************************************************************************** */
 // app.use(passport.initialize());
 // app.use(passport.session());
@@ -153,7 +153,7 @@ app.patch("/user/profile", auth, async (req, res) => {
   }
 });
 
-
+/********************************************************************************************************************************* */
 
 
 //ADMIN PORTAL
@@ -333,29 +333,23 @@ Task.findOneAndUpdate({"_id":eventid}, {
 
 
 //REMARK ROUTE
-app.post('/admin/dashboard/taskone/remark', admauth, (req, res) => {
-  var id=req.body.id;
-  var mongo= require("mongodb");
-  var eventid=new mongo.ObjectId(id);
-Task.findOneAndUpdate({"_id":eventid}, {
-    $set: {
+app.post('/admin/dashboard/taskone/remark/:id', admauth, (req, res) => {
+Task.findOneAndUpdate({"_id":req.params.id}, {
     remark: req.body.remark,
-    }
 },(err, result) => {
         if (err)  {
           res.json({
-            status:400,
             success:false,
             message:err
           })
         }
         else{
-        res.json({
-          success:true,
-          status:200
-        })
+          res.json({
+            success:true,
+            status:200
+          })
       }
-        console.log('Remark ADDED')
+      console.log('Remark complete')
     })
 });
 
