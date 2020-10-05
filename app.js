@@ -119,9 +119,8 @@ app.get('/user/taskone',  auth, (req, res) => {
 })
 
 //Profile
-/*
-app.get("/profile", auth,(req, res)=>{
-	User.find({},(err, result)=>{
+app.get("/user/profile/:username", auth,(req, res)=>{
+	User.find({"username":req.params.username},(err, result)=>{
 	if (err) {
       res.json({
         status:400,
@@ -133,7 +132,7 @@ app.get("/profile", auth,(req, res)=>{
           res.json(result);
     }
 	});
-});*/
+});
 
 
 //UPDATE ROUTE
@@ -383,9 +382,8 @@ Task.findOneAndUpdate({"_id":eventid}, {
 })
 
 //PROFILE OF ADMIN
-/*
-app.get("/admin/profile", admauth,(req, res)=>{
-	Admin.find({},(err, result)=>{
+app.get("/admin/profile/:username", auth,(req, res)=>{
+	Admin.find({"username":req.params.username},(err, result)=>{
 	if (err) {
       res.json({
         status:400,
@@ -397,7 +395,7 @@ app.get("/admin/profile", admauth,(req, res)=>{
           res.json(result);
     }
 	});
-});*/
+});
 
 //UPDATE ROUTE FOR ADMIN
 app.patch("/admin/profile", admauth, async (req, res) => {
