@@ -329,7 +329,37 @@ Task.findOneAndUpdate({"_id":eventid}, {
       }
         console.log('Completed')
     })
-})
+});
+
+
+//REMARK ROUTE
+app.post('/admin/dashboard/taskone/remark', admauth, (req, res) => {
+  var id=req.body.id;
+  var mongo= require("mongodb");
+  var eventid=new mongo.ObjectId(id);
+Task.findOneAndUpdate({"_id":eventid}, {
+    $set: {
+    remark: req.body.remark,
+    }
+},(err, result) => {
+        if (err)  {
+          res.json({
+            status:400,
+            success:false,
+            message:err
+          })
+        }
+        else{
+        res.json({
+          success:true,
+          status:200
+        })
+      }
+        console.log('Remark ADDED')
+    })
+});
+
+
 
 // Complete to Incomplete
 app.post('/admin/dashboard/taskone/incomplete', admauth, (req, res) => {

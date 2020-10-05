@@ -6,7 +6,8 @@ var TaskSchema = new mongoose.Schema({
     taskname:{type: String},
     enddate:{type:String},
     taskdetails:{type: String},
-    complete:{type:String,default:"Incomplete"}
+    complete:{type:String,default:"Incomplete"},
+    remark:{type:String, default: NA}
 });
 
 module.exports = mongoose.model("Task", TaskSchema);
