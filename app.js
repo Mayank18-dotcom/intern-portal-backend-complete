@@ -382,8 +382,8 @@ Task.findOneAndUpdate({"_id":eventid}, {
 })
 
 //PROFILE OF ADMIN
-app.get("/admin/profile/:username", auth,(req, res)=>{
-	Admin.find({"username":req.params.username},(err, result)=>{
+app.get("/admin/profile/:regno", admauth,(req, res)=>{
+	Admin.find({"regno":req.params.regno},(err, result)=>{
 	if (err) {
       res.json({
         status:400,
