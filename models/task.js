@@ -6,6 +6,7 @@ var TaskSchema = new mongoose.Schema({
     taskname:{type: String},
     enddate:{type:String},
     taskdetails:{type: String},
+    link:{type:String},
     complete:{type:String,default:"Incomplete"},
     remark:{type:String, default: "NA"}
 });

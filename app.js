@@ -212,6 +212,7 @@ app.post('/admin/addtask', admauth,(req,res)=>{
     taskname:req.body.taskname,
     taskdetails:req.body.taskdetails,
     enddate:req.body.enddate,
+    link:req.body.link,
     complete:req.body.complete
   })
   Task.create(newtask,(err,result)=>{
