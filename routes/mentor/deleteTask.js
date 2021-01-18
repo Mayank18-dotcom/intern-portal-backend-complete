@@ -1,0 +1,16 @@
+var Task = require("../../models/task");
+module.exports = (req, res) => {
+    Task.deleteOne({"_id":req.params.id},(err, result) => {
+    if (err) {
+      res.json({
+        status:400,
+        success:false,
+        message:err
+      })
+    }
+    else{
+		console.log(result);
+    res.json(result);
+    }
+  })
+}

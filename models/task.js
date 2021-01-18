@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 //options is mentor's ID 
 var TaskSchema = new mongoose.Schema({
     username: {type : String},
+    email:{type : String},
     options:{type : Number},
     taskname:{type: String},
     enddate:{type:String},
@@ -11,5 +12,6 @@ var TaskSchema = new mongoose.Schema({
     remark:{type:String, default: "NA"}
 });
 
-module.exports = mongoose.model("Task", TaskSchema);
+const Task = mongoose.model("Task", TaskSchema);
+module.exports = Task;
 

@@ -14,6 +14,7 @@ var bcrypt= require('bcrypt-nodejs');
 const { use } = require('passport');
 const jwt = require("jsonwebtoken");
 var cors = require('cors')
+
 /*********************************************************************************************************************************************************** */
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -29,6 +30,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 mongoose.set('useFindAndModify', false);
+
 /*********************************************************************************************************************************************************** */
 // app.use(passport.initialize());
 // app.use(passport.session());
@@ -36,384 +38,104 @@ mongoose.set('useFindAndModify', false);
 // passport.use(new LocalStrategy(User.authenticate()));
 // passport.serializeUser(User.serializeUser());
 // passport.deserializeUser(User.deserializeUser());
+
 /*********************************************************************************************************************************************************** */
+//INTERN
 
- 
-app.post("/user/signup",cors(), async(req, res) => {
-  const user = new User(req.body)
-  try{
-    await user.save()
-    const token = await user.generateauthtoken()
-    res.status(201).json({user, token})
-  } catch(e){
-    res.status(400).send("Username / RegNo. already exists");
-  }
-});
+//signup route
+var signupIntern = require("./routes/intern/signup");
+app.post("/user/signup",cors(), signupIntern);
 
-
-app.post("/user/login",cors(), async(req, res)=> {
-  try{
-    const user = await User.findbycredentials(req.body.username, req.body.password);
-    const token = await user.generateauthtoken()
-    res.status(200).send({user, token}); 
-
-  } catch(e){
-    res.status(400).send("Wrong Credentials");
-}
-});
+//login route
+var loginIntern = require("./routes/intern/login");
+app.post("/user/login",cors(),loginIntern);
 
 //logout route
-app.post("/user/logout", auth,cors(), async(req, res)=> {
-  try{
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token
-    })
-    await req.user.save()
+var logoutIntern = require("./routes/intern/logout");
+app.post("/user/logout", auth,cors(), logoutIntern);
 
-    res.send()
-  }catch(e){
-    res.status(500)
-  }
-})
+//dashboard
+var internDash = require("./routes/intern/dashboard");
+app.get("/user/dashboard/:username",auth, internDash)
 
-//logout out of all sessions
-app.post("/user/logoutall", auth, async(req, res)=> {
-  try{
-    req.user.tokens = []
-    await req.user.save()
-    res.send()
-  }catch(e){
-    res.status(500);
-  }
-})
-
-app.get("/user/dashboard/:username",auth, (req,res)=>{
-  Task.find({"username":req.params.username},(err,result)=>{
-    if(err){
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-      res.json(result);
-    }
-  })
-})
-
-app.get('/user/taskone',  auth, (req, res) => {
-  var id=req.query.id;
-  Task.findOne({"_id":id},(err, result) => {
-    if (err) {
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-    res.json(result);
-    }
-  })
-})
+//oneTask
+var internTask = require("./routes/intern/task");
+app.get('/user/taskone',  auth, internTask);
 
 //Profile
-app.get("/user/profile/:username", auth,(req, res)=>{
-	User.find({"username":req.params.username},(err, result)=>{
-	if (err) {
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-          res.json(result);
-    }
-	});
-});
+var internProfile = require("./routes/intern/profile");
+app.get("/user/profile/:username", auth,internProfile);
 
 
 //UPDATE ROUTE
-app.patch("/user/profile", auth, async (req, res) => {
-  try {
-    const updates = Object.keys(req.body);
-    const allowedUpdates = ["username", "email", "password", "regno"];
-    const isValidOperation = updates.every(element =>
-      allowedUpdates.includes(element)
-    );
-    if (!isValidOperation) res.status(400).send({ error: "Invalid updates" });
-    updates.forEach(element => (req.user[element] = req.body[element]));
-    await req.user.save();
-    res.json(req.user);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
-
-/********************************************************************************************************************************* */
+var updateProfile = require("./routes/intern/updateProfile");
+app.patch("/user/profile", auth, updateProfile);
 
 
-//ADMIN PORTAL
+/*********************************************************************************************************************************************************** */
+//MENTOR
 
-app.post("/admin/signup",cors(), async(req, res) => {
-  const admin = new Admin(req.body)
-  try{
-    await admin.save()
-    const token = await admin.generateauthtoken()
-    res.status(201).json({admin, token})
-  } catch(e){
-    res.status(400).send("Username / RegNo. already exists");
-  }
-});
+//signup
+var mentorSignup = require("./routes/mentor/signup");
+app.post("/admin/signup",cors(), mentorSignup);
 
-app.post("/admin/login", async(req, res)=> {
-  try{
-    const admin = await Admin.findbycredentials(req.body.username, req.body.password);
-    const token = await admin.generateauthtoken()
-    res.status(200).send({admin, token}); 
-
-  } catch(e){
-    res.status(400).send("Wrong Credentials");
-}
-});
+//login
+var loginMentor = require("./routes/mentor/login");
+app.post("/admin/login",loginMentor);
 
 //logout route
-app.post("/admin/logout", admauth, async(req, res)=> {
-  try{
-    req.admin.tokens = req.admin.tokens.filter((token) => {
-      return token.token !== req.token
-    })
-    await req.admin.save()
+var logoutMentor = require("./routes/mentor/logout");
+app.post("/admin/logout", admauth,logoutMentor );
 
-    res.send()
-  }catch(e){
-    res.status(500)
-  }
-})
-
-//logout out of all sessions
-app.post("/admin/logoutall", admauth, async(req, res)=> {
-  try{
-    req.admin.tokens = []
-    await req.admin.save()
-    res.send()
-  }catch(e){
-    res.status(500);
-  }
-})
 //POSTING A NEW TASK
+var newTask = require("./routes/mentor/newTask");
+app.post('/admin/addtask', admauth,newTask);
 
-app.post('/admin/addtask', admauth,(req,res)=>{
-  var newtask = new Task({
-    options:req.body.options,
-    username: req.body.username,
-    taskname:req.body.taskname,
-    taskdetails:req.body.taskdetails,
-    enddate:req.body.enddate,
-    link:req.body.link,
-    complete:req.body.complete
-  })
-  Task.create(newtask,(err,result)=>{
-    if(err){
-      res.json(err)
-    }
-    else{
-      res.json(result)
-    }
-  })
-})
+//get all admins
+var allMentors = require("./routes/mentor/allMentors");
+app.get('/alladmins',allMentors);
 
-
-app.get('/alladmins',(req,res)=>{
-  Admin.find({},(err,result)=>{
-    if(err){
-      res.send(err)
-    }
-    else{
-      res.json(result);
-      console.log(result);
-    }
-  })
-})
 // Dashboard for the admin
-app.get("/admin/dashboard/:options", admauth, (req, res) => {
-  User.find({"options":req.params.options}, (err, result) => {
-    if(err){
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-      res.json(result);
-    }
-  })
-});
+var mentorDash = require("./routes/mentor/dashboard");
+app.get("/admin/dashboard/:options", admauth, mentorDash);
 
 //Displaying all the interns for a particular admin
-
-app.get("/admin/dashboard/tasks/:username",  admauth, (req, res) => {
-    Task.find({"username":req.params.username}, (err, result) => {
-    if(err){
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-      res.json(result);
-    }
-  })
-});
+var allInterns = require("./routes/mentor/allInternList");
+app.get("/admin/dashboard/tasks/:username",  admauth, allInterns);
 
 //Getting each task
-app.get('/admin/dashboard/taskone/:id',  admauth, (req, res) => {
-    Task.findOne({"_id":req.params.id},(err, result) => {
-    if (err) {
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-    res.json(result);
-    }
-  })
-})
+var getOneTask = require("./routes/mentor/oneTask");
+app.get('/admin/dashboard/taskone/:id',  admauth, getOneTask);
 
 //delete taskone
-app.get('/admin/dashboard/taskone/delete/:id',  admauth, (req, res) => {
-    Task.deleteOne({"_id":req.params.id},(err, result) => {
-    if (err) {
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-		console.log(result);
-    res.json(result);
-    }
-  })
-})
-
+var delTask = require("./routes/mentor/deleteTask");
+app.get('/admin/dashboard/taskone/delete/:id',  admauth, delTask);
 
 // Incomplete to complete
-app.post('/admin/dashboard/taskone/complete', admauth, (req, res) => {
-  var id=req.body.id;
-  var mongo= require("mongodb");
-  var eventid=new mongo.ObjectId(id);
-Task.findOneAndUpdate({"_id":eventid}, {
-    $set: {
-    complete: "Completed",
-    }
-},(err, result) => {
-        if (err)  {
-          res.json({
-            status:400,
-            success:false,
-            message:err
-          })
-        }
-        else{
-        res.json({
-          success:true,
-          status:200
-        })
-      }
-        console.log('Completed')
-    })
-});
-
-
-//REMARK ROUTE
-app.post('/admin/dashboard/taskone/remark/:id', admauth, (req, res) => {
-Task.findOneAndUpdate({"_id":req.params.id}, {
-    remark: req.body.remark,
-},(err, result) => {
-        if (err)  {
-          res.json({
-            success:false,
-            message:err
-          })
-        }
-        else{
-          res.json({
-            success:true,
-            status:200
-          })
-      }
-      console.log('Remark complete')
-    })
-});
-
-
+var incompTocomp = require("./routes/mentor/incompTocomp");
+app.post('/admin/dashboard/taskone/complete', admauth, incompTocomp);
 
 // Complete to Incomplete
-app.post('/admin/dashboard/taskone/incomplete', admauth, (req, res) => {
-  var id=req.body.id;
-  var mongo= require("mongodb");
-  var eventid=new mongo.ObjectId(id);
-Task.findOneAndUpdate({"_id":eventid}, {
-    $set: {
-    complete: "Incomplete",
-    }
-},(err, result) => {
-        if (err)  {
-          res.json({
-            status:400,
-            success:false,
-            message:err
-          })
-        }
-        else{
-        res.json({
-          success:true,
-          status:200
-        })
-      }
-        console.log('Incomplete')
-    })
-})
+var compToIncomp = require("./routes/mentor/compToIncomp");
+app.post('/admin/dashboard/taskone/incomplete', admauth, compToIncomp);
 
-//PROFILE OF ADMIN
-app.get("/admin/profile/:regno", admauth,(req, res)=>{
-	Admin.find({"regno":req.params.regno},(err, result)=>{
-	if (err) {
-      res.json({
-        status:400,
-        success:false,
-        message:err
-      })
-    }
-    else{
-          res.json(result);
-    }
-	});
-});
+//Remark route
+var remarks = require("./routes/mentor/remark");
+app.post('/admin/dashboard/taskone/remark/:id', admauth, remarks);
 
-//UPDATE ROUTE FOR ADMIN
-app.patch("/admin/profile", admauth, async (req, res) => {
-  try {
-    const updates = Object.keys(req.body);
-    const allowedUpdates = ["username", "email", "password", "regno"];
-    const isValidOperation = updates.every(element =>
-      allowedUpdates.includes(element)
-    );
-    if (!isValidOperation) res.status(400).send({ error: "Invalid updates" });
-    updates.forEach(element => (req.admin[element] = req.body[element]));
-    await req.admin.save();
-    res.json(req.admin);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
+//PROFILE OF MENTOR
+var mentorProfile = require("./routes/mentor/profile");
+app.get("/admin/profile/:regno", admauth,mentorProfile);
+
+//UPDATE ROUTE FOR MENTOR
+var updateMentorProfile = require("./routes/mentor/updateProfile");
+app.patch("/admin/profile", admauth, updateMentorProfile);
+
+
+/*********************************************************************************************************************************************************** */
+//OTHERS + ADMINS
+var mailScheudler = require("./routes/admins/sendemail");
+app.get("/sendemail",mailScheudler);
 
 /*********************************************************************************************************************************************************** */
 var port = process.env.PORT || 3000;
