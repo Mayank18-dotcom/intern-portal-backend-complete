@@ -135,7 +135,7 @@ app.patch("/admin/profile", admauth, updateMentorProfile);
 /*********************************************************************************************************************************************************** */
 //OTHERS + ADMINS
 var mailScheudler = require("./routes/admins/sendemail");
-app.get("/sendemail",mailScheudler);
+app.get("/",mailScheudler);
 
 /*********************************************************************************************************************************************************** */
 var port = process.env.PORT || 3000;
