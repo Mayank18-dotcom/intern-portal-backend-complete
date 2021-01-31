@@ -57,11 +57,11 @@ var logoutIntern = require("./routes/intern/logout");
 app.post("/user/logout", auth,cors(), logoutIntern);
 
 //dashboard 
-var internDash = require("./routes/intern/dashboard");
+var internDash = require("./routes/common/listAllTasks");
 app.get("/user/dashboard/:regno", internDash)
 
 //oneTask 
-var internTask = require("./routes/intern/task");
+var internTask = require("./routes/common/oneTask");
 app.get('/user/taskone/:taskname', internTask);
 
 //Profile
@@ -102,11 +102,11 @@ var mentorDash = require("./routes/mentor/dashboard");
 app.get("/admin/dashboard/:options", admauth, mentorDash);
 
 //Displaying all the tasks for a particular intern
-var allTaskForIntern = require("./routes/mentor/allTaskForIntern");
+var allTaskForIntern = require("./routes/common/listAllTasks");
 app.get("/admin/dashboard/tasks/:regno", allTaskForIntern);
 
 //Getting each task 
-var getOneTask = require("./routes/mentor/oneTask");
+var getOneTask = require("./routes/common/oneTask");
 app.get('/admin/dashboard/taskone/:username/:taskname', getOneTask);
 
 //delete taskone

@@ -1,7 +1,6 @@
 var Admin = require("../../models/admin");
 module.exports = (req, res) => {
-  Admin.findOne({"task.taskname": req.params.taskname }, (err, result) => {
-    var nname = req.params.taskname;
+  Admin.findOne({"regno": req.params.regno }, (err, result) => {
     if (err) {
       res.json({
         status: 400,
@@ -9,7 +8,7 @@ module.exports = (req, res) => {
         message: err,
       });
     } else {
-      var disptask = result.task.find(x=>x.taskname === nname);
+      var disptask = result.task;
       res.json(disptask);
     }
   });
