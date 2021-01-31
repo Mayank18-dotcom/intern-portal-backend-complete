@@ -1,26 +1,53 @@
-var Task = require("../../models/task");
+var Admin = require("../../models/admin");
 module.exports = (req, res) => {
-    var id=req.body.id;
-    var mongo= require("mongodb");
-    var eventid=new mongo.ObjectId(id);
-  Task.findOneAndUpdate({"_id":eventid}, {
-      $set: {
-      complete: "Incomplete",
-      }
-  },(err, result) => {
-          if (err)  {
-            res.json({
-              status:400,
-              success:false,
-              message:err
-            })
-          }
-          else{
+  var username = req.params.username;
+  var taskname = req.params.taskname;
+  Admin.findOne({"task.taskname": taskname}, (err, result) => {
+    var nname = req.params.taskname;
+    if (err) {
+      res.json({
+        status: 400,
+        success: false,
+        message: err,
+      });
+    } else {
+      var allInterns = result.task.find(x=>x.taskname === nname).interns;
+      var okok = allInterns.find(y=>y.internname === username);
+      okok.complete = "Incomplete";
+      
+      var newtask1 = [];
+      allInterns.forEach((ele) => {
+        newtask1.push({
+          "internname": ele.internname,
+          "internemail":ele.internemail,
+          "complete": ele.complete,
+          "enddate":ele.enddate,
+          "remark": ele.remark,
+        });
+      });
+      Admin.findOneAndUpdate({"task.taskname": taskname},
+      { $set: { "task.$.interns": [] } },(err,result)=>{
+        if (err) {
           res.json({
-            success:true,
-            status:200
-          })
+            status: 400,
+            success: false,
+            message: err,
+          });
         }
-          console.log('Incomplete')
+        else{
+          Admin.findOneAndUpdate(
+            { "task.taskname": taskname },
+            { $push: { "task.$.interns": { $each: newtask1 } } },
+            (err, result) => {
+              if (err) {
+                res.json(err);
+              } else {
+                res.json(result);
+              }
+            }
+          );
+        }
       })
-  }
+    }
+  });
+};

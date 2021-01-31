@@ -13,7 +13,9 @@ var passportLocalMongoose  = require('passport-local-mongoose');
 var bcrypt= require('bcrypt-nodejs');
 const { use } = require('passport');
 const jwt = require("jsonwebtoken");
-var cors = require('cors')
+var cors = require('cors');
+const nodemailer = require("nodemailer");
+var schedule = require("node-schedule");
 
 /*********************************************************************************************************************************************************** */
 app.use(function(req, res, next) {
@@ -54,13 +56,13 @@ app.post("/user/login",cors(),loginIntern);
 var logoutIntern = require("./routes/intern/logout");
 app.post("/user/logout", auth,cors(), logoutIntern);
 
-//dashboard
+//dashboard 
 var internDash = require("./routes/intern/dashboard");
-app.get("/user/dashboard/:username",auth, internDash)
+app.get("/user/dashboard/:regno", internDash)
 
-//oneTask
+//oneTask 
 var internTask = require("./routes/intern/task");
-app.get('/user/taskone',  auth, internTask);
+app.get('/user/taskone/:taskname', internTask);
 
 //Profile
 var internProfile = require("./routes/intern/profile");
@@ -87,9 +89,9 @@ app.post("/admin/login",loginMentor);
 var logoutMentor = require("./routes/mentor/logout");
 app.post("/admin/logout", admauth,logoutMentor );
 
-//POSTING A NEW TASK
+//POSTING A NEW TASK 
 var newTask = require("./routes/mentor/newTask");
-app.post('/admin/addtask', admauth,newTask);
+app.post('/admin/addtask/:options',newTask);
 
 //get all admins
 var allMentors = require("./routes/mentor/allMentors");
@@ -99,29 +101,29 @@ app.get('/alladmins',allMentors);
 var mentorDash = require("./routes/mentor/dashboard");
 app.get("/admin/dashboard/:options", admauth, mentorDash);
 
-//Displaying all the interns for a particular admin
-var allInterns = require("./routes/mentor/allInternList");
-app.get("/admin/dashboard/tasks/:username",  admauth, allInterns);
+//Displaying all the tasks for a particular intern
+var allTaskForIntern = require("./routes/mentor/allTaskForIntern");
+app.get("/admin/dashboard/tasks/:regno", allTaskForIntern);
 
-//Getting each task
+//Getting each task 
 var getOneTask = require("./routes/mentor/oneTask");
-app.get('/admin/dashboard/taskone/:id',  admauth, getOneTask);
+app.get('/admin/dashboard/taskone/:username/:taskname', getOneTask);
 
 //delete taskone
 var delTask = require("./routes/mentor/deleteTask");
-app.get('/admin/dashboard/taskone/delete/:id',  admauth, delTask);
+app.get('/admin/dashboard/taskone/delete/:username/:taskname', delTask);
 
 // Incomplete to complete
 var incompTocomp = require("./routes/mentor/incompTocomp");
-app.post('/admin/dashboard/taskone/complete', admauth, incompTocomp);
+app.get('/admin/dashboard/taskone/complete/:username/:taskname', incompTocomp);
 
 // Complete to Incomplete
 var compToIncomp = require("./routes/mentor/compToIncomp");
-app.post('/admin/dashboard/taskone/incomplete', admauth, compToIncomp);
+app.get('/admin/dashboard/taskone/incomplete/:username/:taskname', compToIncomp);
 
 //Remark route
 var remarks = require("./routes/mentor/remark");
-app.post('/admin/dashboard/taskone/remark/:id', admauth, remarks);
+app.post('/admin/dashboard/taskone/remark/:username/:taskname', remarks);
 
 //PROFILE OF MENTOR
 var mentorProfile = require("./routes/mentor/profile");
@@ -129,16 +131,21 @@ app.get("/admin/profile/:regno", admauth,mentorProfile);
 
 //UPDATE ROUTE FOR MENTOR
 var updateMentorProfile = require("./routes/mentor/updateProfile");
+const { sendRemainderEmail } = require('./routes/admins/sendemail');
 app.patch("/admin/profile", admauth, updateMentorProfile);
 
 
 /*********************************************************************************************************************************************************** */
 //OTHERS + ADMINS
-var mailScheudler = require("./routes/admins/sendemail");
-app.get("/",mailScheudler);
+//var mailScheudler = require("./routes/admins/sendemail");
+var forSend = require('./routes/admins/sendemail');
+// function sendRemainderEmail()
+// {
+//   app.get("/",mailScheudler);
+// }
 
 /*********************************************************************************************************************************************************** */
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
-	console.log("server started");
+  forSend.sendRemainderEmail();
 });
