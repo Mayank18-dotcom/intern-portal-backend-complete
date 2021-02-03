@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     regno: {type: Number, require: true,unique: true},
 	options: {type: Number,require: true},
     email: {type: String, require:true},
+    joindate: { type: String },
     tokens: [{
         token :{
             type: String,

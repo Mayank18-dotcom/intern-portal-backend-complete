@@ -8,6 +8,7 @@ const AdminSchema = new mongoose.Schema({
   password: { type: String, require: true },
   regno: { type: Number, unique: true, require: true },
   email: { type: String, require: true },
+  joindate: { type: String },
   task: [
     {
       taskname: { type: String },

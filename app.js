@@ -58,11 +58,11 @@ app.post("/user/logout", auth,cors(), logoutIntern);
 
 //dashboard 
 var internDash = require("./routes/common/listAllTasks");
-app.get("/user/dashboard/:regno", internDash)
+app.get("/user/dashboard/:regno",auth, internDash)
 
 //oneTask 
 var internTask = require("./routes/common/oneTask");
-app.get('/user/taskone/:taskname', internTask);
+app.get('/user/taskone/:taskname',auth, internTask);
 
 //Profile
 var internProfile = require("./routes/intern/profile");
@@ -91,7 +91,7 @@ app.post("/admin/logout", admauth,logoutMentor );
 
 //POSTING A NEW TASK 
 var newTask = require("./routes/mentor/newTask");
-app.post('/admin/addtask/:options',newTask);
+app.post('/admin/addtask/:options',admauth,newTask);
 
 //get all admins
 var allMentors = require("./routes/mentor/allMentors");
@@ -103,27 +103,27 @@ app.get("/admin/dashboard/:options", admauth, mentorDash);
 
 //Displaying all the tasks for a particular intern
 var allTaskForIntern = require("./routes/common/listAllTasks");
-app.get("/admin/dashboard/tasks/:regno", allTaskForIntern);
+app.get("/admin/dashboard/tasks/:regno",admauth, allTaskForIntern);
 
 //Getting each task 
 var getOneTask = require("./routes/common/oneTask");
-app.get('/admin/dashboard/taskone/:username/:taskname', getOneTask);
+app.get('/admin/dashboard/taskone/:username/:taskname',admauth, getOneTask);
 
 //delete taskone
 var delTask = require("./routes/mentor/deleteTask");
-app.get('/admin/dashboard/taskone/delete/:username/:taskname', delTask);
+app.get('/admin/dashboard/taskone/delete/:username/:taskname',admauth, delTask);
 
 // Incomplete to complete
 var incompTocomp = require("./routes/mentor/incompTocomp");
-app.get('/admin/dashboard/taskone/complete/:username/:taskname', incompTocomp);
+app.get('/admin/dashboard/taskone/complete/:username/:taskname',admauth, incompTocomp);
 
 // Complete to Incomplete
 var compToIncomp = require("./routes/mentor/compToIncomp");
-app.get('/admin/dashboard/taskone/incomplete/:username/:taskname', compToIncomp);
+app.get('/admin/dashboard/taskone/incomplete/:username/:taskname',admauth, compToIncomp);
 
 //Remark route
 var remarks = require("./routes/mentor/remark");
-app.post('/admin/dashboard/taskone/remark/:username/:taskname', remarks);
+app.post('/admin/dashboard/taskone/remark/:username/:taskname',admauth, remarks);
 
 //PROFILE OF MENTOR
 var mentorProfile = require("./routes/mentor/profile");
